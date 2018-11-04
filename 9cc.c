@@ -14,6 +14,32 @@ typedef struct {
   char *input;
 } Token;
 
+typedef struct Node {
+  int ty;
+  struct Node* lhs;
+  struct Node* rhs;
+  int val;
+} Node;
+
+enum {
+  ND_NUM = 256,     // 整数のノードの型
+};
+
+Node* new_node(int op, Node *lhs, Node *rhs) {
+  Node *node = malloc(sizeof(Node));
+  node->ty = op;
+  node->lhs = lhs;
+  node->rhs = rhs;
+  return node;
+}
+
+Node* new_node_num(int val) {
+  Node *node = malloc(sizeof(Node));
+  node->ty = ND_NUM;
+  node->val = val;
+  return node;
+}
+
 Token tokens[100];
 
 void tokenize(char *p) {
