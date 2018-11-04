@@ -90,6 +90,11 @@ Node *mul() {
     return lhs;
   }
 
+  if (tokens[pos].ty == '*') {
+    pos++;
+    return new_node('*', lhs, mul());
+  }
+
   return lhs;
 }
 
@@ -140,6 +145,9 @@ void gen(Node *node) {
       break;
     case '-':
       printf("  sub rax, rdi\n");
+      break;
+    case '*':
+      printf("  mul rdi\n");
       break;
   }
 
