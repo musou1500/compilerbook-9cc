@@ -40,6 +40,7 @@ Node* new_node_num(int val) {
   return node;
 }
 
+int pos = 0;
 Token tokens[100];
 
 void tokenize(char *p) {
@@ -79,6 +80,71 @@ void error(int i) {
   exit(1);
 }
 
+Node *mul();
+Node *expr();
+Node *term();
+
+Node *mul() {
+  Node *lhs = term();
+  if (tokens[pos].ty == TK_EOF) {
+    return lhs;
+  }
+
+  return lhs;
+}
+
+
+Node* expr() {
+  Node *lhs = mul();
+  if (tokens[pos].ty == TK_EOF) {
+    return lhs;
+  }
+
+  if (tokens[pos].ty == '+') {
+    pos++;
+    return new_node('+', lhs, expr());
+  }
+
+  if (tokens[pos].ty == '-') {
+    pos++;
+    return new_node('-', lhs, expr());
+  }
+
+  return lhs;
+}
+
+Node *term() {
+  if (tokens[pos].ty == TK_NUM) {
+    return new_node_num(tokens[pos++].val);
+  }
+
+  error(pos);
+}
+
+
+void gen(Node *node) {
+  if (node->ty == ND_NUM) {
+    printf("  push %d\n", node->val);
+    return;
+  }
+
+  gen(node->lhs);
+  gen(node->rhs);
+
+  printf("  pop rdi\n");
+  printf("  pop rax\n");
+
+  switch (node->ty) {
+    case '+':
+      printf("  add rax, rdi\n");
+      break;
+    case '-':
+      printf("  sub rax, rdi\n");
+      break;
+  }
+
+  printf("  push rax\n");
+}
 
 int main(int argc, char **argv)
 {
@@ -88,38 +154,15 @@ int main(int argc, char **argv)
   }
 
   tokenize(argv[1]);
+  Node *node = expr();
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
   printf("main:\n");
   
+  gen(node);
 
-  if (tokens[0].ty != TK_NUM)
-    error(0);
-  printf("  mov rax, %d\n", tokens[0].val);
-  int i = 1;
-  while (tokens[i].ty != TK_EOF) {
-    if (tokens[i].ty == '+') {
-      i++;
-      if (tokens[i].ty != TK_NUM)
-        error(i);
-      printf("  add rax, %d\n", tokens[i].val);
-      i++;
-      continue;
-    }
-
-    if (tokens[i].ty == '-') {
-      i++;
-      if (tokens[i].ty != TK_NUM)
-        error(i);
-      printf("  sub rax, %d\n", tokens[i].val);
-      i++;
-      continue;
-    }
-  
-    error(i);
-  }
-  
+  printf("  pop rax\n");
   printf("  ret\n");
   return 0;
 }
