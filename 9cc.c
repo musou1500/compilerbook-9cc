@@ -128,6 +128,17 @@ Node *term() {
     return new_node_num(tokens[pos++].val);
   }
 
+  if (tokens[pos].ty == '(') {
+    pos++;
+    Node *node = expr();
+    if (tokens[pos].ty != ')') {
+      error(pos);
+    }
+
+    pos++;
+    return node;
+  }
+
   error(pos);
 }
 
