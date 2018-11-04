@@ -40,7 +40,7 @@ void tokenize(char *p) {
       continue;
     }
 
-    fprintf(stderr, "トークないずできません: %s\n", p);
+    fprintf(stderr, "トークナイズできません: %s\n", p);
     exit(1);
   }
 
