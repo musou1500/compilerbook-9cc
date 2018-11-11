@@ -9,7 +9,7 @@ try() {
   actual="$?"
 
   if [ "$actual" != "$expected" ]; then
-    echo "$input expected, but got $actual"
+    echo "$expected expected, but got $actual"
     exit 1
   fi
 }
@@ -22,4 +22,6 @@ try 47 "5+6*7"
 try 5 "3+6/3"
 try 15 "5*(9-6)"
 try 4 "(3+5)/2"
+try 2 "a = b = 2;"
+try 4 "a = b = 2; a + b;"
 echo OK
