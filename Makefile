@@ -9,4 +9,4 @@ $(OBJS): 9cc.h
 test: 9cc
 	./test.sh
 clean:
-	rm -f 9cc *.o *~
+	rm -f 9cc *.o *~ tmp*
