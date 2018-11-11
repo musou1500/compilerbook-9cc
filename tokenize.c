@@ -12,7 +12,7 @@ void error_tok(int i) {
 }
 
 void error(char *err) {
-  fprintf(stderr, err);
+  fprintf(stderr, "%s", err);
   exit(1);
 }
 
