@@ -20,10 +20,12 @@ typedef struct Node {
   struct Node* lhs;
   struct Node* rhs;
   int val;
+  char name;
 } Node;
 
 enum {
   ND_NUM = 256,     // 整数のノードの型
+  ND_IDENT,
 };
 
 Node* new_node(int op, Node *lhs, Node *rhs) {
@@ -41,8 +43,17 @@ Node* new_node_num(int val) {
   return node;
 }
 
+Node* new_node_ident(int name) {
+  Node *node = malloc(sizeof(Node));
+  node->ty = ND_IDENT;
+  node->name = name;
+  return node;
+}
+
 int pos = 0;
+int code_pos = 0;
 Token tokens[100];
+Node *code[100];
 
 void tokenize(char *p) {
   int i = 0;
@@ -149,6 +160,10 @@ Node *term() {
     return new_node_num(tokens[pos++].val);
   }
 
+  if (tokens[pos].ty == TK_IDENT) {
+    return new_node_ident(tokens[pos++].val);
+  }
+
   if (tokens[pos].ty == '(') {
     pos++;
     Node *node = expr();
@@ -161,6 +176,32 @@ Node *term() {
   }
 
   error_tok(pos);
+}
+
+Node *assign() {
+  Node* lhs = expr();
+  if (tokens[pos].ty == TK_EOF) {
+    return lhs;
+  }
+  
+  if (tokens[pos].ty == '=') {
+    pos++;
+    return new_node('=', lhs, assign());
+  }
+
+  if (tokens[pos].ty == ';') {
+    pos++;
+    return lhs;
+  }
+}
+
+void program() {
+  code[code_pos++] = assign();
+  if (tokens[pos].ty == TK_EOF) {
+    return;
+  }
+  
+  program();
 }
 
 
