@@ -20,7 +20,7 @@ Node* new_node_num(int val) {
   return node;
 }
 
-Node* new_node_ident(int name) {
+Node* new_node_ident(char name) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_IDENT;
   node->name = name;
@@ -76,7 +76,7 @@ Node *term() {
   }
 
   if (tokens[pos].ty == TK_IDENT) {
-    return new_node_ident(tokens[pos++].val);
+    return new_node_ident(*tokens[pos++].input);
   }
 
   if (tokens[pos].ty == '(') {
