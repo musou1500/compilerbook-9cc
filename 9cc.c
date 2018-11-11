@@ -91,8 +91,13 @@ void tokenize(char *p) {
   tokens[i].input = p;
 }
 
-void error(int i) {
+void error_tok(int i) {
   fprintf(stderr, "予期せぬトークンです: %s\n", tokens[i].input);
+  exit(1);
+}
+
+void error(char *err) {
+  fprintf(stderr, err);
   exit(1);
 }
 
@@ -148,14 +153,14 @@ Node *term() {
     pos++;
     Node *node = expr();
     if (tokens[pos].ty != ')') {
-      error(pos);
+      error_tok(pos);
     }
 
     pos++;
     return node;
   }
 
-  error(pos);
+  error_tok(pos);
 }
 
 
