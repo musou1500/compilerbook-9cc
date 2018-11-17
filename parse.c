@@ -36,18 +36,16 @@ bool match_ty(Parser* parser, int ty) {
 
 Node *mul(Parser* parser) {
   Node *lhs = term(parser);
-  
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_EOF) {
+  if (match_ty(parser, TK_EOF)) {
     return lhs;
   }
 
-  if (cur_token->ty == '*') {
+  if (match_ty(parser, '*')) {
     parser->tok_pos++;
     return new_node('*', lhs, mul(parser));
   }
 
-  if (cur_token->ty == '/') {
+  if (match_ty(parser, '/')) {
     parser->tok_pos++;
     return new_node('/', lhs, mul(parser));
   }
@@ -59,17 +57,16 @@ Node *mul(Parser* parser) {
 Node* expr(Parser* parser) {
   Node *lhs = mul(parser);
 
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_EOF) {
+  if (match_ty(parser, TK_EOF)) {
     return lhs;
   }
 
-  if (cur_token->ty == '+') {
+  if (match_ty(parser, '+')) {
     parser->tok_pos++;
     return new_node('+', lhs, expr(parser));
   }
 
-  if (cur_token->ty == '-') {
+  if (match_ty(parser, '-')) {
     parser->tok_pos++;
     return new_node('-', lhs, expr(parser));
   }
@@ -79,13 +76,11 @@ Node* expr(Parser* parser) {
 
 Node* cmp(Parser* parser) {
   Node *lhs = expr(parser);
-
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_EOF) {
+  if (match_ty(parser, TK_EOF)) {
     return lhs;
   }
 
-  if (cur_token->ty == '!') {
+  if (match_ty(parser, '!')) {
     Token* next_token = parser->tokens->data[parser->tok_pos + 1];
     if (next_token->ty == '=') {
       parser->tok_pos += 2;
@@ -93,7 +88,7 @@ Node* cmp(Parser* parser) {
     }
   }
 
-  if (cur_token->ty == '=') {
+  if (match_ty(parser, '=')) {
     Token* next_token = parser->tokens->data[parser->tok_pos + 1];
     if (next_token->ty == '=') {
       parser->tok_pos += 2;
@@ -106,22 +101,20 @@ Node* cmp(Parser* parser) {
 
 Node *term(Parser* parser) {
   Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_NUM) {
+  if (match_ty(parser, TK_NUM)) {
     parser->tok_pos++;
     return new_node_num(cur_token->val);
   }
 
-  if (cur_token->ty == TK_IDENT) {
+  if (match_ty(parser, TK_IDENT)) {
     parser->tok_pos++;
     return new_node_ident(*cur_token->input);
   }
 
-  if (cur_token->ty == '(') {
+  if (match_ty(parser, '(')) {
     parser->tok_pos++;
     Node *node = cmp(parser);
-
-    cur_token = parser->tokens->data[parser->tok_pos];
-    if (cur_token->ty != ')') {
+    if (!match_ty(parser, ')')) {
       Token* unexpected_token = parser->tokens->data[parser->tok_pos];
       error_tok(unexpected_token);
     }
@@ -136,17 +129,16 @@ Node *term(Parser* parser) {
 
 Node *assign(Parser *parser) {
   Node* lhs = cmp(parser);
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_EOF) {
+  if (match_ty(parser, TK_EOF)) {
     return lhs;
   }
   
-  if (cur_token->ty == '=') {
+  if (match_ty(parser, '=')) {
     parser->tok_pos++;
     return new_node('=', lhs, assign(parser));
   }
 
-  if (cur_token->ty == ';') {
+  if (match_ty(parser, ';')) {
     parser->tok_pos++;
     return lhs;
   }
@@ -162,9 +154,7 @@ Parser* new_parser(Vector* code, Vector* tokens) {
 
 void program(Parser* parser) {
   vec_push(parser->code, assign(parser));
-
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (cur_token->ty == TK_EOF) {
+  if (match_ty(parser, TK_EOF)) {
     return;
   }
   

@@ -44,14 +44,12 @@ typedef struct {
   int tok_pos;
 } Parser;
 
-extern Token tokens[100];
-
 void tokenize(char *p, Vector* tokens);
 void error(char *err);
 void error_tok(Token* token);
 void gen(Node *node);
 Parser* new_parser(Vector* code, Vector* tokens);
-void program();
+void program(Parser* parser);
 
 
 Vector *new_vector();

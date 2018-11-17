@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int expect(int line, int expected, int actual) {
+void expect(int line, int expected, int actual) {
   if (expected == actual)
     return;
   fprintf(stderr, "%d: %d expected, but got %d\n",

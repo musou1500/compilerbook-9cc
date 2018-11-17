@@ -1,5 +1,7 @@
 #include "./9cc.h"
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 Vector *new_vector() {
   Vector *vec = malloc(sizeof(Vector));

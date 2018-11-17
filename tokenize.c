@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "9cc.h"
 
-Token tokens[100];
-
 void error_tok(Token* token) {
   fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
   exit(1);
