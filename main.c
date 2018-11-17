@@ -15,7 +15,9 @@ int main(int argc, char **argv)
   }
 
   tokenize(argv[1]);
-  program();
+
+  Vector *code = new_vector();
+  program(code);
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
@@ -27,8 +29,8 @@ int main(int argc, char **argv)
   printf("  mov rbp, rsp\n");
   printf("  sub rsp, 208\n");
   
-  for (int i = 0; i < code_pos; i++) {
-    gen(code[i]);
+  for (int i = 0; i < code->len; i++) {
+    gen(code->data[i]);
     printf("  pop rax\n");
   }
   

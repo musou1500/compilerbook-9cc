@@ -39,8 +39,6 @@ typedef struct {
 } Map;
 
 extern Token tokens[100];
-extern Node *code[100];
-extern int code_pos;
 
 void tokenize(char *p);
 void error(char *err);

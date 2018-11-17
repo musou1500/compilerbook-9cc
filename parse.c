@@ -2,8 +2,6 @@
 #include "9cc.h"
 
 int pos = 0;
-int code_pos = 0;
-Node *code[100];
 
 Node* new_node(int op, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
@@ -134,12 +132,12 @@ Node *assign() {
   }
 }
 
-void program() {
-  code[code_pos++] = assign();
+void program(Vector* code) {
+  vec_push(code, assign());
   if (tokens[pos].ty == TK_EOF) {
     return;
   }
   
-  program();
+  program(code);
 }
 
