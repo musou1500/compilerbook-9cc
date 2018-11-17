@@ -27,6 +27,7 @@ Node* new_node_ident(char name) {
   return node;
 }
 
+Node *cmp();
 Node *mul();
 Node *expr();
 Node *term();
@@ -70,6 +71,29 @@ Node* expr() {
   return lhs;
 }
 
+Node* cmp() {
+  Node *lhs = expr();
+  if (tokens[pos].ty == TK_EOF) {
+    return lhs;
+  }
+
+  if (tokens[pos].ty == TK_NEGATE) {
+    if (tokens[pos + 1].ty == '=') {
+      pos += 2;
+      return new_node(ND_NEQ, lhs, cmp());
+    }
+  }
+
+  if (tokens[pos].ty == '=') {
+    if (tokens[pos + 1].ty == '=') {
+      pos += 2;
+      return new_node(ND_EQ, lhs, cmp());
+    }
+  }
+
+  return lhs;
+}
+
 Node *term() {
   if (tokens[pos].ty == TK_NUM) {
     return new_node_num(tokens[pos++].val);
@@ -81,7 +105,7 @@ Node *term() {
 
   if (tokens[pos].ty == '(') {
     pos++;
-    Node *node = expr();
+    Node *node = cmp();
     if (tokens[pos].ty != ')') {
       error_tok(pos);
     }
@@ -94,7 +118,7 @@ Node *term() {
 }
 
 Node *assign() {
-  Node* lhs = expr();
+  Node* lhs = cmp();
   if (tokens[pos].ty == TK_EOF) {
     return lhs;
   }

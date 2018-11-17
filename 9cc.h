@@ -15,6 +15,8 @@ typedef struct {
 
 enum {
   ND_NUM = 256,     // 整数のノードの型
+  ND_EQ,
+  ND_NEQ,
   ND_IDENT,
 };
 
