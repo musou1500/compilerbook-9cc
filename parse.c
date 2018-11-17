@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include "9cc.h"
 
 Node* new_node(int op, Node *lhs, Node *rhs) {
@@ -27,6 +28,11 @@ Node *cmp(Parser* parser);
 Node *mul(Parser* parser);
 Node *expr(Parser* parser);
 Node *term(Parser* parser);
+
+bool match_ty(Parser* parser, int ty) {
+  Token* cur_token = parser->tokens->data[parser->tok_pos];
+  return cur_token->ty == ty;
+}
 
 Node *mul(Parser* parser) {
   Node *lhs = term(parser);
