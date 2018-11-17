@@ -27,6 +27,12 @@ typedef struct Node {
   char name;
 } Node;
 
+typedef struct {
+  void **data;
+  int capacity;
+  int len;
+} Vector;
+
 
 extern Token tokens[100];
 extern Node *code[100];
@@ -37,5 +43,10 @@ void error(char *err);
 void error_tok(int i);
 void gen(Node *node);
 void program();
+
+
+Vector *new_vector();
+void vec_push(Vector *vec, void* elem);
+void runtest();
 
 #endif
