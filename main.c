@@ -14,10 +14,12 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  tokenize(argv[1]);
+  Vector *tokens = new_vector();
+  tokenize(argv[1], tokens);
 
   Vector *code = new_vector();
-  program(code);
+  Parser *parser = new_parser(code, tokens);
+  program(parser);
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
