@@ -31,7 +31,8 @@ void tokenize(char *p) {
       || *p == '('
       || *p == ')'
       || *p == '='
-      || *p == ';') {
+      || *p == ';'
+      || *p == '!') {
       tokens[i].ty = *p;
       tokens[i].input = p;
       i++;
