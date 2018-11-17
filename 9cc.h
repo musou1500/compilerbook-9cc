@@ -3,7 +3,6 @@
 enum {
   TK_NUM = 256,
   TK_IDENT,
-  TK_NEGATE,
   TK_EOF,
 };
 

@@ -77,7 +77,7 @@ Node* cmp() {
     return lhs;
   }
 
-  if (tokens[pos].ty == TK_NEGATE) {
+  if (tokens[pos].ty == '!') {
     if (tokens[pos + 1].ty == '=') {
       pos += 2;
       return new_node(ND_NEQ, lhs, cmp());
