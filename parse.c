@@ -17,22 +17,20 @@ Node* new_node_num(int val) {
   return node;
 }
 
-Node* new_node_ident(char name) {
+Node* new_node_ident(char* name) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_IDENT;
   node->name = name;
   return node;
 }
 
-Node* new_node_func_call(char name, Vector* args) {
+Node* new_node_func_call(char* name, Vector* args) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_FUNC_CALL;
   node->name = name;
   node->args = args;
   return node;
 }
-
-
 
 Node *cmp(Parser* parser);
 Node *mul(Parser* parser);
@@ -138,9 +136,9 @@ Node *term(Parser* parser) {
       }
 
       parser->tok_pos++;
-      return new_node_func_call(*cur_token->input, args);
+      return new_node_func_call(cur_token->input, args);
     } else {
-      return new_node_ident(*cur_token->input);
+      return new_node_ident(cur_token->input);
     }
   }
 

@@ -36,7 +36,7 @@ typedef struct Node {
   struct Node* lhs;
   struct Node* rhs;
   int val;
-  char name;
+  char *name;
   Vector* args;
 } Node;
 
