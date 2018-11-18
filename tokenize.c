@@ -67,7 +67,7 @@ void tokenize(char *p, Vector* tokens) {
       continue;
     }
 
-    if (is_identifier_char(*p)) {
+    if ('a' <= *p && *p <= 'z') {
       int ident_size = 0;
       while (is_identifier_char(*(p + ident_size))) {
         ident_size++;
