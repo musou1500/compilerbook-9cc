@@ -17,15 +17,8 @@ enum {
   ND_EQ,
   ND_NEQ,
   ND_IDENT,
+  ND_FUNC_CALL
 };
-
-typedef struct Node {
-  int ty;
-  struct Node* lhs;
-  struct Node* rhs;
-  int val;
-  char name;
-} Node;
 
 typedef struct {
   void **data;
@@ -37,6 +30,15 @@ typedef struct {
   Vector *keys;
   Vector *vals;
 } Map;
+
+typedef struct Node {
+  int ty;
+  struct Node* lhs;
+  struct Node* rhs;
+  int val;
+  char name;
+  Vector* args;
+} Node;
 
 typedef struct {
   Vector* tokens;
