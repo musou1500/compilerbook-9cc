@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "9cc.h"
 
 void error_tok(Token* token) {
@@ -21,12 +22,25 @@ Token *new_token(int ty, char *input) {
   return tok;
 }
 
+Token* new_token_ident(char* input, int len) {
+  char *ident = malloc(sizeof(char) * len + 1);
+  strncpy(ident, input, len);
+  Token* tok = malloc(sizeof(Token));
+  tok->ty = TK_IDENT;
+  tok->input = ident;
+  return tok;
+}
+
 Token *new_token_val(int ty, char *input, int val) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;
   tok->input = input;
   tok->val = val;
   return tok;
+}
+
+bool is_identifier_char(char c) {
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || '_' == c;
 }
 
 void tokenize(char *p, Vector* tokens) {
@@ -53,10 +67,16 @@ void tokenize(char *p, Vector* tokens) {
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
-      vec_push(tokens, new_token(TK_IDENT, p));
-      i++;
-      p++;
+    if (is_identifier_char(*p)) {
+      int ident_size = 0;
+      while (is_identifier_char(*(p + ident_size))) {
+        ident_size++;
+      }
+
+      Token* ident_tok = new_token_ident(p, ident_size);
+      vec_push(tokens, ident_tok);
+      i += ident_size;
+      p += ident_size;
       continue;
     }
 
