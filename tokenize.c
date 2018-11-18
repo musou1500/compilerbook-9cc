@@ -45,7 +45,8 @@ void tokenize(char *p, Vector* tokens) {
       || *p == ')'
       || *p == '='
       || *p == ';'
-      || *p == '!') {
+      || *p == '!'
+      || *p == ',') {
       vec_push(tokens, new_token(*p, p));
       i++;
       p++;
