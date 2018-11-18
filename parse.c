@@ -35,6 +35,12 @@ Node* new_node_func_call(char* name, Vector* args) {
   return node;
 }
 
+void error() {
+  Token *token = tokens->data[pos];
+  fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
+  exit(1);
+}
+
 Node *cmp();
 Node *mul();
 Node *expr();
@@ -134,8 +140,7 @@ Node *term() {
       pos++;
       Vector* args = arglist();
       if (!match_ty(')')) {
-        Token* unexpected_token = tokens->data[pos];
-        error_tok(unexpected_token);
+        error();
       }
 
       pos++;
@@ -149,16 +154,14 @@ Node *term() {
     pos++;
     Node *node = cmp();
     if (!match_ty(')')) {
-      Token* unexpected_token = tokens->data[pos];
-      error_tok(unexpected_token);
+      error();
     }
 
     pos++;
     return node;
   }
 
-  Token* unexpected_token = tokens->data[pos];
-  error_tok(unexpected_token);
+  error();
 }
 
 Node *assign() {
