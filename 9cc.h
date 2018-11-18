@@ -8,7 +8,7 @@ enum {
 
 typedef struct {
   int ty;
-  int val;
+  float val;
   char *input;
 } Token;
 

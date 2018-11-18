@@ -31,7 +31,7 @@ Token* new_token_ident(char* input, int len) {
   return tok;
 }
 
-Token *new_token_val(int ty, char *input, int val) {
+Token *new_token_val(int ty, char *input, float val) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;
   tok->input = input;
@@ -81,8 +81,8 @@ void tokenize(char *p, Vector* tokens) {
     }
 
     if (isdigit(*p)) {
-      int int_val = strtol(p, &p, 10);
-      vec_push(tokens, new_token_val(TK_NUM, p, int_val));
+      float float_val = strtof(p, &p);
+      vec_push(tokens, new_token_val(TK_NUM, p, float_val));
       i++;
       continue;
     }
