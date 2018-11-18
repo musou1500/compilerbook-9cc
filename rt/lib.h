@@ -1,1 +1,1 @@
-extern int a(int x, int y);
+extern int add_int(int x, int y);

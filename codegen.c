@@ -3,8 +3,9 @@
 
 void gen_lval(Node* node) {
   if (node->ty == ND_IDENT) {
+    char ident = *node->name;
     printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", ('z' - node->name + 1) * 8);
+    printf("  sub rax, %d\n", ('z' - ident + 1) * 8);
     printf("  push rax\n");
     return;
   }
@@ -28,7 +29,7 @@ void gen(Node *node) {
 
     printf("  push r10\n");
     printf("  push r11\n");
-    printf("  call %c\n", node->name);
+    printf("  call %s\n", node->name);
     printf("  pop r10\n");
     printf("  pop r11\n");
     printf("  push rax\n");

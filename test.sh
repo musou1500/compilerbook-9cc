@@ -30,6 +30,6 @@ try 0 "3 == 2"
 try 1 "2 * 2 == 4"
 try 1 "2 + 3 == 5"
 try 1 "2 != 5"
-try 5 "a(2, 3)"
-try 25 "5 * a(2, 3)"
+try 5 "add_int(2, 3)"
+try 25 "5 * add_int(2, 3)"
 echo OK
