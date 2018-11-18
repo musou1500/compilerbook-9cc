@@ -14,12 +14,9 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  Vector *tokens = new_vector();
-  tokenize(argv[1], tokens);
+  tokenize(argv[1]);
 
-  Vector *code = new_vector();
-  Parser *parser = new_parser(code, tokens);
-  program(parser);
+  parse();
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
@@ -30,7 +27,7 @@ int main(int argc, char **argv)
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
   printf("  sub rsp, 208\n");
-  
+
   for (int i = 0; i < code->len; i++) {
     gen(code->data[i]);
     printf("  pop rax\n");

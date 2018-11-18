@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include "9cc.h"
 
+Vector* tokens;
+
 void error_tok(Token* token) {
   fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
   exit(1);
@@ -43,7 +45,9 @@ bool is_identifier_char(char c) {
   return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || '_' == c;
 }
 
-void tokenize(char *p, Vector* tokens) {
+void tokenize(char *p) {
+  tokens = new_vector();
+
   int i = 0;
   while (*p) {
     if (isspace(*p)) {

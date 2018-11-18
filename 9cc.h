@@ -40,19 +40,14 @@ typedef struct Node {
   Vector* args;
 } Node;
 
-typedef struct {
-  Vector* tokens;
-  Vector* code;
-  int tok_pos;
-} Parser;
+Vector* tokens;
+Vector* code;
 
-void tokenize(char *p, Vector* tokens);
+void tokenize(char *p);
 void error(char *err);
 void error_tok(Token* token);
 void gen(Node *node);
-Parser* new_parser(Vector* code, Vector* tokens);
-void program(Parser* parser);
-
+void parse();
 
 Vector *new_vector();
 void vec_push(Vector *vec, void* elem);

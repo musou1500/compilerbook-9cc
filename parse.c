@@ -2,6 +2,9 @@
 #include <stdbool.h>
 #include "9cc.h"
 
+Vector* code;
+int pos = 0;
+
 Node* new_node(int op, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
   node->ty = op;
@@ -32,163 +35,159 @@ Node* new_node_func_call(char* name, Vector* args) {
   return node;
 }
 
-Node *cmp(Parser* parser);
-Node *mul(Parser* parser);
-Node *expr(Parser* parser);
-Node *term(Parser* parser);
+Node *cmp();
+Node *mul();
+Node *expr();
+Node *term();
 
-bool match_ty(Parser* parser, int ty) {
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
+bool match_ty(int ty) {
+  Token* cur_token = tokens->data[pos];
   return cur_token->ty == ty;
 }
 
-Node *mul(Parser* parser) {
-  Node *lhs = term(parser);
-  if (match_ty(parser, TK_EOF)) {
+Node *mul() {
+  Node *lhs = term();
+  if (match_ty(TK_EOF)) {
     return lhs;
   }
 
-  if (match_ty(parser, '*')) {
-    parser->tok_pos++;
-    return new_node('*', lhs, mul(parser));
+  if (match_ty('*')) {
+    pos++;
+    return new_node('*', lhs, mul());
   }
 
-  if (match_ty(parser, '/')) {
-    parser->tok_pos++;
-    return new_node('/', lhs, mul(parser));
+  if (match_ty('/')) {
+    pos++;
+    return new_node('/', lhs, mul());
   }
 
   return lhs;
 }
 
 
-Node* expr(Parser* parser) {
-  Node *lhs = mul(parser);
+Node* expr() {
+  Node *lhs = mul();
 
-  if (match_ty(parser, TK_EOF)) {
+  if (match_ty(TK_EOF)) {
     return lhs;
   }
 
-  if (match_ty(parser, '+')) {
-    parser->tok_pos++;
-    return new_node('+', lhs, expr(parser));
+  if (match_ty('+')) {
+    pos++;
+    return new_node('+', lhs, expr());
   }
 
-  if (match_ty(parser, '-')) {
-    parser->tok_pos++;
-    return new_node('-', lhs, expr(parser));
+  if (match_ty('-')) {
+    pos++;
+    return new_node('-', lhs, expr());
   }
 
   return lhs;
 }
 
-Node* cmp(Parser* parser) {
-  Node *lhs = expr(parser);
-  if (match_ty(parser, TK_EOF)) {
+Node* cmp() {
+  Node *lhs = expr();
+  if (match_ty(TK_EOF)) {
     return lhs;
   }
 
-  if (match_ty(parser, '!')) {
-    Token* next_token = parser->tokens->data[parser->tok_pos + 1];
+  if (match_ty('!')) {
+    Token* next_token = tokens->data[pos + 1];
     if (next_token->ty == '=') {
-      parser->tok_pos += 2;
-      return new_node(ND_NEQ, lhs, cmp(parser));
+      pos += 2;
+      return new_node(ND_NEQ, lhs, cmp());
     }
   }
 
-  if (match_ty(parser, '=')) {
-    Token* next_token = parser->tokens->data[parser->tok_pos + 1];
+  if (match_ty('=')) {
+    Token* next_token = tokens->data[pos + 1];
     if (next_token->ty == '=') {
-      parser->tok_pos += 2;
-      return new_node(ND_EQ, lhs, cmp(parser));
+      pos += 2;
+      return new_node(ND_EQ, lhs, cmp());
     }
   }
 
   return lhs;
 }
 
-Vector* arglist(Parser* parser) {
+Vector* arglist() {
   Vector* args = new_vector();
-  vec_push(args, cmp(parser));
-  while(match_ty(parser, ',')) {
-    parser->tok_pos++;
-    vec_push(args, cmp(parser));
+  vec_push(args, cmp());
+  while(match_ty(',')) {
+    pos++;
+    vec_push(args, cmp());
   }
   return args;
 }
 
-Node *term(Parser* parser) {
-  Token* cur_token = parser->tokens->data[parser->tok_pos];
-  if (match_ty(parser, TK_NUM)) {
-    parser->tok_pos++;
+Node *term() {
+  Token* cur_token = tokens->data[pos];
+  if (match_ty(TK_NUM)) {
+    pos++;
     return new_node_num(cur_token->val);
   }
 
-  if (match_ty(parser, TK_IDENT)) {
-    parser->tok_pos++;
+  if (match_ty(TK_IDENT)) {
+    pos++;
 
-    if (match_ty(parser, '(')) {
-      parser->tok_pos++;
-      Vector* args = arglist(parser);
-      if (!match_ty(parser, ')')) {
-        Token* unexpected_token = parser->tokens->data[parser->tok_pos];
+    if (match_ty('(')) {
+      pos++;
+      Vector* args = arglist();
+      if (!match_ty(')')) {
+        Token* unexpected_token = tokens->data[pos];
         error_tok(unexpected_token);
       }
 
-      parser->tok_pos++;
+      pos++;
       return new_node_func_call(cur_token->input, args);
     } else {
       return new_node_ident(cur_token->input);
     }
   }
 
-  if (match_ty(parser, '(')) {
-    parser->tok_pos++;
-    Node *node = cmp(parser);
-    if (!match_ty(parser, ')')) {
-      Token* unexpected_token = parser->tokens->data[parser->tok_pos];
+  if (match_ty('(')) {
+    pos++;
+    Node *node = cmp();
+    if (!match_ty(')')) {
+      Token* unexpected_token = tokens->data[pos];
       error_tok(unexpected_token);
     }
 
-    parser->tok_pos++;
+    pos++;
     return node;
   }
 
-  Token* unexpected_token = parser->tokens->data[parser->tok_pos];
+  Token* unexpected_token = tokens->data[pos];
   error_tok(unexpected_token);
 }
 
-Node *assign(Parser *parser) {
-  Node* lhs = cmp(parser);
-  if (match_ty(parser, TK_EOF)) {
+Node *assign() {
+  Node* lhs = cmp();
+  if (match_ty(TK_EOF)) {
     return lhs;
   }
   
-  if (match_ty(parser, '=')) {
-    parser->tok_pos++;
-    return new_node('=', lhs, assign(parser));
+  if (match_ty('=')) {
+    pos++;
+    return new_node('=', lhs, assign());
   }
 
-  if (match_ty(parser, ';')) {
-    parser->tok_pos++;
+  if (match_ty(';')) {
+    pos++;
     return lhs;
   }
 }
 
-Parser* new_parser(Vector* code, Vector* tokens) {
-  Parser* parser = malloc(sizeof(Parser));
-  parser->tokens = tokens;
-  parser->code = code;
-  parser->tok_pos = 0;
-  return parser;
-}
-
-void program(Parser* parser) {
-  vec_push(parser->code, assign(parser));
-  if (match_ty(parser, TK_EOF)) {
+void program() {
+  vec_push(code, assign());
+  if (match_ty(TK_EOF)) {
     return;
   }
-  
-  program(parser);
+
+  program();
 }
 
+void parse() {
+  code = new_vector();
+  program();
+}
