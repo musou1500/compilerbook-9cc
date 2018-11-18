@@ -4,7 +4,8 @@ try() {
   input="$2"
 
   ./9cc "$input" > tmp.s
-  gcc -o tmp tmp.s
+  gcc -c tmp.s
+  gcc rt/lib.o tmp.o -o tmp
   ./tmp
   actual="$?"
 
@@ -29,4 +30,6 @@ try 0 "3 == 2"
 try 1 "2 * 2 == 4"
 try 1 "2 + 3 == 5"
 try 1 "2 != 5"
+try 5 "a(2, 3)"
+try 25 "5 * a(2, 3)"
 echo OK
