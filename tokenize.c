@@ -7,16 +7,6 @@
 
 Vector* tokens;
 
-void error_tok(Token* token) {
-  fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
-  exit(1);
-}
-
-void error(char *err) {
-  fprintf(stderr, "%s", err);
-  exit(1);
-}
-
 Token *new_token(int ty, char *input) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;

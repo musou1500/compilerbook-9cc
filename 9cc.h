@@ -44,8 +44,6 @@ Vector* tokens;
 Vector* code;
 
 void tokenize(char *p);
-void error(char *err);
-void error_tok(Token* token);
 void gen(Node *node);
 void parse();
 
