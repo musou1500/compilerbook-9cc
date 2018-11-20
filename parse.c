@@ -117,13 +117,13 @@ Node* cmp() {
   return lhs;
 }
 
-Vector* arglist() {
-  Vector* args = new_vector();
+Vector* arglist(Vector* args) {
   vec_push(args, cmp());
-  while(match_ty(',')) {
+  if (match_ty(',')) {
     pos++;
-    vec_push(args, cmp());
+    arglist(args);
   }
+
   return args;
 }
 
@@ -139,7 +139,8 @@ Node *term() {
 
     if (match_ty('(')) {
       pos++;
-      Vector* args = arglist();
+      Vector* args = new_vector();
+      arglist(args);
       if (!match_ty(')')) {
         error();
       }
