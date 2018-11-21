@@ -165,30 +165,31 @@ Node* cmp() {
   return lhs;
 }
 
-// logical_or: cmp or_expr'
-// logical_or': ε | "||" logical_expr
-Node* logical_or() {
+// logical_and: cmp logical_and'
+// logical_and': ε | "&&" logical
+Node *logical();
+Node* logical_and() {
   Node* lhs = cmp();
-  if (match_ty('|')) {
+  if (match_ty('&')) {
     Token* next_token = tokens->data[pos + 1];
-    if(next_token->ty == '|') {
+    if(next_token->ty == '&') {
       pos += 2;
-      return new_node(ND_LOGICAL_OR, lhs, logical());
+      return new_node(ND_LOGICAL_AND, lhs, logical());
     }
   }
 
   return lhs;
 }
 
-// logical: or_expr logical'
-// logical': ε | "&&" or_expr
+// logical: logical_and logical'
+// logical': ε | "||" logical_and
 Node *logical() {
-  Node* lhs = logical_or();
-  if (match_ty('&')) {
+  Node* lhs = logical_and();
+  if (match_ty('|')) {
     Token* next_token = tokens->data[pos + 1];
-    if(next_token->ty == '&') {
+    if(next_token->ty == '|') {
       pos += 2;
-      return new_node(ND_LOGICAL_AND, lhs, logical_expr());
+      return new_node(ND_LOGICAL_OR, lhs, logical_and());
     }
   }
 
