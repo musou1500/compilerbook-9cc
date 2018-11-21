@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "9cc.h"
 
 Vector* code;
@@ -55,6 +56,22 @@ Node* new_node_func_call(char* name, Vector* args) {
   return node;
 }
 
+Node* new_node_if(Node* cond, Vector* stmts, Node* els) {
+  Node *if_node = malloc(sizeof(Node));
+  if_node->ty = ND_IF;
+  if_node->cond = cond;
+  if_node->stmts = stmts;
+  if_node->els = els;
+  return if_node;
+}
+
+Node* new_node_else(Vector* stmts) {
+  Node *if_node = malloc(sizeof(Node));
+  if_node->ty = ND_ELSE;
+  if_node->stmts = stmts;
+  return if_node;
+}
+
 void error() {
   Token *token = tokens->data[pos];
   fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
@@ -69,6 +86,11 @@ Node *term();
 bool match_ty(int ty) {
   Token* cur_token = tokens->data[pos];
   return cur_token->ty == ty;
+}
+
+bool match_keyword(char* keyword) {
+  Token* cur_token = (Token *)tokens->data[pos];
+  return match_ty(TK_IDENT) && strcmp(keyword, cur_token->input) == 0;
 }
 
 // mul: term mul'
@@ -275,20 +297,24 @@ Node *assign() {
 
 // block_item_list: ε | stmt block_item_list'
 void stmt();
-void block_item_list() {
-  stmt();
+void block_item_list(Vector* stmts) {
+  stmt(stmts);
   if (!match_ty('}')) {
-    block_item_list();
+    block_item_list(stmts);
   }
 }
 
-// stmt: assign | "{" block_item_list "}"
-void stmt() {
-  if (match_ty('{')) {
+// stmt: assign | "{" block_item_list "}" | if_stmt
+Node* if_stmt();
+void stmt(Vector* stmts) {
+  if (match_keyword("if")) {
+    pos++;
+    vec_push(stmts == NULL ? code : stmts, if_stmt());
+  } else if (match_ty('{')) {
     // compound statement
     pos++;
 
-    block_item_list();
+    block_item_list(stmts);
     if (match_ty('}')) {
       pos++;
       return;
@@ -296,14 +322,73 @@ void stmt() {
 
     error();
   } else {
-    vec_push(code, assign());
+    vec_push(stmts == NULL ? code : stmts, assign());
   }
+}
+
+// if: "if" "(" logical ")" stmt else_if
+// else_if: ε | else_if' else_if | else
+// else_if': "else" "if" "(" logical ")" stmt
+// else: "else" stmt
+Node *else_if();
+Node *if_stmt() {
+  if (match_ty('(')) {
+    pos++;
+    Node* cond = logical();
+    if (!match_ty(')')) {
+      error();
+    }
+
+    pos++;
+    Vector* stmts = new_vector();
+    stmt(stmts);
+    Node* els = NULL;
+    if (match_keyword("else")) {
+      pos++;
+      els = else_if();
+    }
+
+    return new_node_if(cond, stmts, els);
+  }
+
+  error();
+}
+
+
+Node* else_if() {
+  if (match_keyword("if")) {
+    pos++;
+    if (match_ty('(')) {
+      pos++;
+      Node* cond = logical();
+      if (!match_ty(')')) {
+        error();
+      }
+
+      pos++;
+      Vector* stmts = new_vector();
+      stmt(stmts);
+      Node* els = NULL;
+      if (match_keyword("else")) {
+        pos++;
+        els = else_if();
+      }
+
+      return new_node_if(cond, stmts, els);
+    }
+  } else {
+    Vector* stmts = new_vector();
+    stmt(stmts);
+    return new_node_else(stmts);
+  }
+
+  error();
 }
 
 // program: stmt program'
 // program': ε | program program'
 void program() {
-  stmt();
+  stmt(NULL);
   if (match_ty(TK_EOF)) {
     return;
   }
