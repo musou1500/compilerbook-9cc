@@ -165,6 +165,36 @@ Node* cmp() {
   return lhs;
 }
 
+// logical_or: cmp or_expr'
+// logical_or': ε | "||" logical_expr
+Node* logical_or() {
+  Node* lhs = cmp();
+  if (match_ty('|')) {
+    Token* next_token = tokens->data[pos + 1];
+    if(next_token->ty == '|') {
+      pos += 2;
+      return new_node(ND_LOGICAL_OR, lhs, logical());
+    }
+  }
+
+  return lhs;
+}
+
+// logical: or_expr logical'
+// logical': ε | "&&" or_expr
+Node *logical() {
+  Node* lhs = logical_or();
+  if (match_ty('&')) {
+    Token* next_token = tokens->data[pos + 1];
+    if(next_token->ty == '&') {
+      pos += 2;
+      return new_node(ND_LOGICAL_AND, lhs, logical_expr());
+    }
+  }
+
+  return lhs;
+}
+
 
 // arglist: cmp arglist'
 // arglist': "," arglist' | ε

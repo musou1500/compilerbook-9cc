@@ -20,8 +20,10 @@ enum {
   ND_LT,
   ND_GTE,
   ND_GT,
+  ND_LOGICAL_AND,
+  ND_LOGICAL_OR,
   ND_IDENT,
-  ND_FUNC_CALL
+  ND_FUNC_CALL,
 };
 
 typedef struct {
