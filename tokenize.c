@@ -40,7 +40,7 @@ void tokenize(char *p) {
 
   int i = 0;
   while (*p) {
-    if (isspace(*p)) {
+    if (isspace(*p) || *p == '\n') {
       p++;
       continue;
     }
