@@ -4,12 +4,14 @@
 #include "9cc.h"
 
 Vector* code;
+Scope* global_scope;
 int pos = 0;
 
 Scope* new_scope() {
-  Scope scope = malloc(sizeof(Scope));
+  Scope *scope = malloc(sizeof(Scope));
   scope->vars = new_map();
   scope->var_cnt = 0;
+  return scope;
 }
 
 int scope_declare_var(Scope* scope, char *name) {
@@ -17,9 +19,10 @@ int scope_declare_var(Scope* scope, char *name) {
   if (var_idx != NULL) {
     return (int)var_idx;
   }
-
-  map_put(scope->vars, name, scope->var_cnt);
-  return scope->var_cnt++;
+  
+  scope->var_cnt++;
+  map_put(scope->vars, name, (void *)scope->var_cnt);
+  return scope->var_cnt;
 }
 
 Node* new_node(int op, Node *lhs, Node *rhs) {
@@ -204,6 +207,7 @@ Node *assign() {
   
   if (match_ty('=')) {
     pos++;
+    scope_declare_var(global_scope, lhs->name);
     return new_node('=', lhs, assign());
   }
 
@@ -255,5 +259,6 @@ void program() {
 
 void parse() {
   code = new_vector();
+  global_scope = new_scope();
   program();
 }

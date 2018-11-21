@@ -47,6 +47,7 @@ typedef struct {
 
 Vector* tokens;
 Vector* code;
+Scope* global_scope;
 
 void tokenize(char *p);
 void gen(Node *node);

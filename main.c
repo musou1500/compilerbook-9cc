@@ -23,10 +23,10 @@ int main(int argc, char **argv)
   printf("main:\n");
 
   // プロローグ
-  // 変数26個分の領域を確保する
+  // ローカル変数確保
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
+  printf("  sub rsp, %d\n", 8 * global_scope->var_cnt);
 
   for (int i = 0; i < code->len; i++) {
     gen(code->data[i]);

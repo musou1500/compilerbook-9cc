@@ -3,14 +3,20 @@
 
 void gen_lval(Node* node) {
   if (node->ty == ND_IDENT) {
-    char ident = *node->name;
+    void *var_idx = map_get(global_scope->vars, node->name);
+    if (var_idx == NULL) {
+      fprintf(stderr, "%sは定義されていません", node->name);
+      exit(1);
+    }
+
     printf("  mov rax, rbp\n");
-    printf("  sub rax, %d\n", ('z' - ident + 1) * 8);
+    printf("  sub rax, %d\n", ((int)var_idx - 1) * 8);
     printf("  push rax\n");
     return;
   }
 
-  error("代入の左辺値が変数ではありません");
+  fprintf(stderr, "代入の左辺値が変数ではありません");
+  exit(1);
 }
 
 void gen(Node *node) {
