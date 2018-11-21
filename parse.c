@@ -291,8 +291,9 @@ Node *assign() {
     pos++;
     return lhs;
   }
-}
 
+  error();
+}
 
 
 // block_item_list: ε | stmt block_item_list'
@@ -326,11 +327,9 @@ void stmt(Vector* stmts) {
   }
 }
 
-// if: "if" "(" logical ")" stmt else_if
-// else_if: ε | else_if' else_if | else
-// else_if': "else" "if" "(" logical ")" stmt
-// else: "else" stmt
-Node *else_if();
+// if_stmt: "if" "(" logical ")" stmt elif
+// elif: ε | "else" if_stmt | "else" stmt
+Node* elif();
 Node *if_stmt() {
   if (match_ty('(')) {
     pos++;
@@ -342,47 +341,26 @@ Node *if_stmt() {
     pos++;
     Vector* stmts = new_vector();
     stmt(stmts);
-    Node* els = NULL;
     if (match_keyword("else")) {
       pos++;
-      els = else_if();
+      return new_node_if(cond, stmts, elif());
+    } else {
+      return new_node_if(cond, stmts, NULL);
     }
-
-    return new_node_if(cond, stmts, els);
   }
 
   error();
 }
 
-
-Node* else_if() {
+Node* elif() {
   if (match_keyword("if")) {
     pos++;
-    if (match_ty('(')) {
-      pos++;
-      Node* cond = logical();
-      if (!match_ty(')')) {
-        error();
-      }
-
-      pos++;
-      Vector* stmts = new_vector();
-      stmt(stmts);
-      Node* els = NULL;
-      if (match_keyword("else")) {
-        pos++;
-        els = else_if();
-      }
-
-      return new_node_if(cond, stmts, els);
-    }
+    return if_stmt();
   } else {
     Vector* stmts = new_vector();
     stmt(stmts);
     return new_node_else(stmts);
   }
-
-  error();
 }
 
 // program: stmt program'

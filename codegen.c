@@ -28,6 +28,11 @@ void gen_lval(Node* node) {
 void gen_if(Node* node) {
   switch(node->ty) {
     case ND_ELSE: {
+      if (node->els != NULL) {
+        fprintf(stderr, "elseの前にifがありません");
+        exit(1);
+      }
+
       for (int i = 0; i < node->stmts->len; i++) {
         gen((Node *)node->stmts->data[i]);
       }
