@@ -3,7 +3,16 @@
 enum {
   TK_NUM = 256,
   TK_IDENT,
+  TK_KEYWORD,
   TK_EOF,
+};
+
+enum {
+  K_IF,
+  K_ELSE,
+  K_WHILE,
+  K_CONTINUE,
+  K_BREAK,
 };
 
 typedef struct {

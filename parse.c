@@ -96,9 +96,9 @@ bool match_ty(int ty) {
   return cur_token->ty == ty;
 }
 
-bool match_keyword(char* keyword) {
+bool match_keyword(int keyword) {
   Token* cur_token = (Token *)tokens->data[pos];
-  return match_ty(TK_IDENT) && strcmp(keyword, cur_token->name->data) == 0;
+  return match_ty(TK_KEYWORD) && keyword == cur_token->val;
 }
 
 // mul: term mul'
@@ -317,10 +317,10 @@ void block_item_list(Vector* stmts) {
 Node* if_stmt();
 Node* while_stmt();
 void stmt(Vector* stmts) {
-  if (match_keyword("if")) {
+  if (match_keyword(K_IF)) {
     pos++;
     vec_push(stmts == NULL ? code : stmts, if_stmt());
-  } else if (match_keyword("while")) {
+  } else if (match_keyword(K_WHILE)) {
     pos++;
     vec_push(stmts == NULL ? code : stmts, while_stmt());
   } else if (match_ty('{')) {
@@ -343,6 +343,7 @@ void stmt(Vector* stmts) {
 // elif: ε | "else" if_stmt | "else" stmt
 Node* elif();
 Node *if_stmt() {
+  Token* tok = tokens->data[pos];
   if (match_ty('(')) {
     pos++;
     Node* cond = logical();
@@ -353,7 +354,7 @@ Node *if_stmt() {
     pos++;
     Vector* stmts = new_vector();
     stmt(stmts);
-    if (match_keyword("else")) {
+    if (match_keyword(K_ELSE)) {
       pos++;
       return new_node_if(cond, stmts, elif());
     } else {
@@ -365,7 +366,7 @@ Node *if_stmt() {
 }
 
 Node* elif() {
-  if (match_keyword("if")) {
+  if (match_keyword(K_IF)) {
     pos++;
     return if_stmt();
   } else {

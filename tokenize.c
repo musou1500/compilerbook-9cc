@@ -7,6 +7,15 @@
 
 Vector* tokens;
 
+char *keywords[] = {
+  "if",
+  "else",
+  "while",
+  "continue",
+  "break",
+  NULL
+};
+
 Token *new_token(int ty, char *input) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;
@@ -30,6 +39,14 @@ Token *new_token_val(int ty, char *input, int val) {
   return tok;
 }
 
+Token *new_token_keyword(char *input, int val) {
+  Token* tok = malloc(sizeof(Token));
+  tok->ty = TK_KEYWORD;
+  tok->input = input;
+  tok->val = val;
+  return tok;
+}
+
 bool is_identifier_char(char c) {
   return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || '_' == c;
 }
@@ -37,7 +54,6 @@ bool is_identifier_char(char c) {
 void tokenize(char *p) {
   tokens = new_vector();
 
-  int i = 0;
   while (*p) {
     if (isspace(*p) || *p == '\n') {
       p++;
@@ -61,7 +77,6 @@ void tokenize(char *p) {
       || *p == '!'
       || *p == ',') {
       vec_push(tokens, new_token(*p, p));
-      i++;
       p++;
       continue;
     }
@@ -71,19 +86,24 @@ void tokenize(char *p) {
       do {
         str_push(ident, *p);
         p++;
-        i++;
       } while (is_identifier_char(*p));
       str_push(ident, '\0');
+      
+      Token* tok = new_token_ident(p, ident);
+      for (int i = 0; keywords[i] != NULL; i++) {
+        if (strcmp(ident->data, keywords[i]) == 0) {
+          tok = new_token_keyword(p, i);
+          break;
+        }
+      }
 
-      Token* ident_tok = new_token_ident(p, ident);
-      vec_push(tokens, ident_tok);
+      vec_push(tokens, tok);
       continue;
     }
 
     if (isdigit(*p)) {
       int int_val = strtol(p, &p, 10);
       vec_push(tokens, new_token_val(TK_NUM, p, int_val));
-      i++;
       continue;
     }
 
