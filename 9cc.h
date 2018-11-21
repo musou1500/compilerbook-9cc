@@ -16,6 +16,7 @@ typedef struct {
   int ty;
   int val;
   char *input;
+  String *name;
 } Token;
 
 enum {
@@ -62,7 +63,7 @@ typedef struct Node {
   int val;
 
   // fn_call or ident
-  char *name;
+  String *name;
   Vector* args;
 } Node;
 

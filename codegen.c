@@ -9,9 +9,9 @@ int label_num() {
 
 void gen_lval(Node* node) {
   if (node->ty == ND_IDENT) {
-    void *var_idx = map_get(global_scope->vars, node->name);
+    void *var_idx = map_get(global_scope->vars, node->name->data);
     if (var_idx == NULL) {
-      fprintf(stderr, "%sは定義されていません", node->name);
+      fprintf(stderr, "%sは定義されていません", node->name->data);
       exit(1);
     }
 
@@ -91,7 +91,7 @@ void gen(Node *node) {
 
     printf("  push r10\n");
     printf("  push r11\n");
-    printf("  call %s\n", node->name);
+    printf("  call %s\n", node->name->data);
     printf("  pop r10\n");
     printf("  pop r11\n");
     printf("  push rax\n");

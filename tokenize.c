@@ -14,12 +14,11 @@ Token *new_token(int ty, char *input) {
   return tok;
 }
 
-Token* new_token_ident(char* input, int len) {
-  char *ident = malloc(sizeof(char) * len + 1);
-  strncpy(ident, input, len);
+Token* new_token_ident(char* input, String *name) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = TK_IDENT;
-  tok->input = ident;
+  tok->input = input;
+  tok->name = name;
   return tok;
 }
 
@@ -68,15 +67,16 @@ void tokenize(char *p) {
     }
 
     if ('a' <= *p && *p <= 'z') {
-      int ident_size = 0;
-      while (is_identifier_char(*(p + ident_size))) {
-        ident_size++;
-      }
+      String *ident = new_string();
+      do {
+        str_push(ident, *p);
+        p++;
+        i++;
+      } while (is_identifier_char(*p));
+      str_push(ident, '\0');
 
-      Token* ident_tok = new_token_ident(p, ident_size);
+      Token* ident_tok = new_token_ident(p, ident);
       vec_push(tokens, ident_tok);
-      i += ident_size;
-      p += ident_size;
       continue;
     }
 

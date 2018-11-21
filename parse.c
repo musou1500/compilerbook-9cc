@@ -41,14 +41,14 @@ Node* new_node_num(int val) {
   return node;
 }
 
-Node* new_node_ident(char* name) {
+Node* new_node_ident(String* name) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_IDENT;
   node->name = name;
   return node;
 }
 
-Node* new_node_func_call(char* name, Vector* args) {
+Node* new_node_func_call(String* name, Vector* args) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_FUNC_CALL;
   node->name = name;
@@ -98,7 +98,7 @@ bool match_ty(int ty) {
 
 bool match_keyword(char* keyword) {
   Token* cur_token = (Token *)tokens->data[pos];
-  return match_ty(TK_IDENT) && strcmp(keyword, cur_token->input) == 0;
+  return match_ty(TK_IDENT) && strcmp(keyword, cur_token->name->data) == 0;
 }
 
 // mul: term mul'
@@ -261,9 +261,9 @@ Node *term() {
       }
 
       pos++;
-      return new_node_func_call(cur_token->input, args);
+      return new_node_func_call(cur_token->name, args);
     } else {
-      return new_node_ident(cur_token->input);
+      return new_node_ident(cur_token->name);
     }
   }
 
@@ -291,7 +291,7 @@ Node *assign() {
   
   if (match_ty('=')) {
     pos++;
-    scope_declare_var(global_scope, lhs->name);
+    scope_declare_var(global_scope, lhs->name->data);
     return new_node('=', lhs, assign());
   }
 
