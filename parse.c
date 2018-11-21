@@ -196,10 +196,10 @@ Node *logical() {
 }
 
 
-// arglist: cmp arglist'
+// arglist: logical arglist'
 // arglist': "," arglist' | ε
 Vector* arglist(Vector* args) {
-  vec_push(args, cmp());
+  vec_push(args, logical());
   if (match_ty(',')) {
     pos++;
     arglist(args);
@@ -209,7 +209,7 @@ Vector* arglist(Vector* args) {
 }
 
 
-// term: num | fncall_or_var | "(" cmp ")"
+// term: num | fncall_or_var | "(" logical ")"
 // fncall_or_var: ident "(" arglist ")" | ident
 Node *term() {
   Token* cur_token = tokens->data[pos];
@@ -238,7 +238,7 @@ Node *term() {
 
   if (match_ty('(')) {
     pos++;
-    Node *node = cmp();
+    Node *node = logical();
     if (!match_ty(')')) {
       error();
     }
@@ -250,10 +250,10 @@ Node *term() {
   error();
 }
 
-// assign: cmp assign' ";"
-// assign': ε | "=" cmp assign'
+// assign: logical assign' ";"
+// assign': ε | "=" logical assign'
 Node *assign() {
-  Node* lhs = cmp();
+  Node* lhs = logical();
   if (match_ty(TK_EOF)) {
     return lhs;
   }
