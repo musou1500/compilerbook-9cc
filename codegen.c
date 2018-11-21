@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "9cc.h"
 
 void gen_lval(Node* node) {
