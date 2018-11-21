@@ -45,4 +45,5 @@ try 1 "if(1) { 1; } else { 2; }"
 try 2 "if(0) { 1; } else { 2; }"
 try 2 "if(0) { 1; } else if(1) { 2; } else { 3; }"
 try 3 "if(0) { 1; } else if(0) { 2; } else { 3; }"
+try 55 "i = 0; sum = 0; while(i < 10) { i = i + 1; sum = sum + i; }"
 echo OK

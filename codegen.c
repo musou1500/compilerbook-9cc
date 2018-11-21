@@ -60,6 +60,21 @@ void gen_if(Node* node) {
   }
 }
 
+void gen_while(Node* node) {
+  int start_label = label_num();
+  int end_label = label_num();
+  printf("L%d:\n", start_label);
+  gen(node->cond);
+  printf("  pop rax\n");
+  printf("  cmp rax, 0\n");
+  printf("  je L%d\n", end_label);
+  for (int i = 0; i < node->stmts->len; i++) {
+    gen((Node *)node->stmts->data[i]);
+  }
+  printf("  jmp L%d\n", start_label);
+  printf("L%d:\n", end_label);
+}
+
 void gen(Node *node) {
   if (node->ty == ND_FUNC_CALL) {
     // 引数は整数の場合，%rdi，%rsi，%rdx，%rcx，%r8，%r9に置く．残りはスタックへ．
@@ -108,6 +123,11 @@ void gen(Node *node) {
 
   if (node->ty == ND_IF) {
     gen_if(node);
+    return;
+  }
+
+  if (node->ty == ND_WHILE) {
+    gen_while(node);
     return;
   }
 
