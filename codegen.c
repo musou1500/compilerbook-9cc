@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include "9cc.h"
 
+int label_num() {
+  static int label_num = 0;
+  return label_num++;
+}
+
 void gen_lval(Node* node) {
   if (node->ty == ND_IDENT) {
     void *var_idx = map_get(global_scope->vars, node->name);
@@ -21,7 +26,6 @@ void gen_lval(Node* node) {
 }
 
 void gen(Node *node) {
-  static int flag_num = 0;
   if (node->ty == ND_FUNC_CALL) {
     // 引数は整数の場合，%rdi，%rsi，%rdx，%rcx，%r8，%r9に置く．残りはスタックへ．
     char *arg_dests[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
@@ -117,49 +121,57 @@ void gen(Node *node) {
       printf("  setle al\n");
       printf("  movzb rax, al\n");
       break;
-    case ND_LOGICAL_AND:
-      flag_num++;
+    case ND_LOGICAL_AND: {
+      int false_label = label_num();
+      int true_label = label_num();
+      int end_label = label_num();
+
       printf("  cmp rax, 0\n");
-      printf("  je L%d\n", flag_num);
+      printf("  je L%d\n", false_label);
       printf("  cmp rdi, 0\n");
-      printf("  je L%d\n", flag_num);
-      printf("  jmp L%d\n", flag_num + 1);
+      printf("  je L%d\n", false_label);
+      printf("  jmp L%d\n", true_label);
 
       // if false
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", false_label);
       printf("  mov rax, 0\n");
-      printf("  jmp L%d\n", flag_num + 1);
+      printf("  jmp L%d\n", end_label);
 
       // if true
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", true_label);
       printf("  mov rax, 1\n");
-      printf("  jmp L%d\n", flag_num);
+      printf("  jmp L%d\n", end_label);
 
       // return
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", end_label);
       break;
-    case ND_LOGICAL_OR:
-      flag_num++;
+    }
+    case ND_LOGICAL_OR: {
+      int false_label = label_num();
+      int true_label = label_num();
+      int end_label = label_num();
+
       printf("  cmp rax, 1\n");
-      printf("  je L%d\n", flag_num + 1);
+      printf("  je L%d\n", true_label);
       printf("  cmp rdi, 1\n");
-      printf("  je L%d\n", flag_num + 1);
+      printf("  je L%d\n", true_label);
       printf("  mov rax, 0\n");
-      printf("  jmp L%d\n", flag_num);
+      printf("  jmp L%d\n", false_label);
 
       // if false
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", false_label);
       printf("  mov rax, 0\n");
-      printf("  jmp L%d\n", flag_num + 1);
+      printf("  jmp L%d\n", end_label);
 
       // if true
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", true_label);
       printf("  mov rax, 1\n");
-      printf("  jmp L%d\n", flag_num);
+      printf("  jmp L%d\n", end_label);
 
       // return
-      printf("L%d:\n", flag_num++);
+      printf("L%d:\n", end_label);
       break;
+    }
   }
 
   printf("  push rax\n");
