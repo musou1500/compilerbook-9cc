@@ -52,6 +52,8 @@ bool match_ty(int ty) {
   return cur_token->ty == ty;
 }
 
+// mul: term mul'
+// mul': * mul | / mul | ε
 Node *mul() {
   Node *lhs = term();
   if (match_ty(TK_EOF)) {
@@ -71,7 +73,8 @@ Node *mul() {
   return lhs;
 }
 
-
+// expr: mul expr'
+// expr': + expr expr' | - expr expr' | ε
 Node* expr() {
   Node *lhs = mul();
 
@@ -92,6 +95,9 @@ Node* expr() {
   return lhs;
 }
 
+
+// cmp: expr cmp'
+// cmp': != expr cmp' | == expr cmp' | ε
 Node* cmp() {
   Node *lhs = expr();
   if (match_ty(TK_EOF)) {
@@ -117,6 +123,9 @@ Node* cmp() {
   return lhs;
 }
 
+
+// arglist: cmp arglist'
+// arglist': "," arglist' | ε
 Vector* arglist(Vector* args) {
   vec_push(args, cmp());
   if (match_ty(',')) {
@@ -127,6 +136,9 @@ Vector* arglist(Vector* args) {
   return args;
 }
 
+
+// term: num | fncall_or_var | "(" cmp ")"
+// fncall_or_var: ident "(" arglist ")" | ident
 Node *term() {
   Token* cur_token = tokens->data[pos];
   if (match_ty(TK_NUM)) {
@@ -166,6 +178,8 @@ Node *term() {
   error();
 }
 
+// assign: cmp assign' ";"
+// assign': ε | "=" cmp assign'
 Node *assign() {
   Node* lhs = cmp();
   if (match_ty(TK_EOF)) {
@@ -183,6 +197,8 @@ Node *assign() {
   }
 }
 
+// program: assign program'
+// program': ε | assign program'
 void program() {
   vec_push(code, assign());
   if (match_ty(TK_EOF)) {
