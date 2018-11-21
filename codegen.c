@@ -21,6 +21,7 @@ void gen_lval(Node* node) {
 }
 
 void gen(Node *node) {
+  static int flag_num = 0;
   if (node->ty == ND_FUNC_CALL) {
     // 引数は整数の場合，%rdi，%rsi，%rdx，%rcx，%r8，%r9に置く．残りはスタックへ．
     char *arg_dests[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
@@ -115,6 +116,49 @@ void gen(Node *node) {
       printf("  cmp rdi, rax\n");
       printf("  setle al\n");
       printf("  movzb rax, al\n");
+      break;
+    case ND_LOGICAL_AND:
+      flag_num++;
+      printf("  cmp rax, 0\n");
+      printf("  je L%d\n", flag_num);
+      printf("  cmp rdi, 0\n");
+      printf("  je L%d\n", flag_num);
+      printf("  jmp L%d\n", flag_num + 1);
+
+      // if false
+      printf("L%d:\n", flag_num++);
+      printf("  mov rax, 0\n");
+      printf("  jmp L%d\n", flag_num + 1);
+
+      // if true
+      printf("L%d:\n", flag_num++);
+      printf("  mov rax, 1\n");
+      printf("  jmp L%d\n", flag_num);
+
+      // return
+      printf("L%d:\n", flag_num++);
+      break;
+    case ND_LOGICAL_OR:
+      flag_num++;
+      printf("  cmp rax, 1\n");
+      printf("  je L%d\n", flag_num + 1);
+      printf("  cmp rdi, 1\n");
+      printf("  je L%d\n", flag_num + 1);
+      printf("  mov rax, 0\n");
+      printf("  jmp L%d\n", flag_num);
+
+      // if false
+      printf("L%d:\n", flag_num++);
+      printf("  mov rax, 0\n");
+      printf("  jmp L%d\n", flag_num + 1);
+
+      // if true
+      printf("L%d:\n", flag_num++);
+      printf("  mov rax, 1\n");
+      printf("  jmp L%d\n", flag_num);
+
+      // return
+      printf("L%d:\n", flag_num++);
       break;
   }
 
