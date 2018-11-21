@@ -7,6 +7,12 @@ enum {
 };
 
 typedef struct {
+  char *data;
+  int capacity;
+  int len;
+} String;
+
+typedef struct {
   int ty;
   int val;
   char *input;
@@ -68,6 +74,9 @@ typedef struct {
 Vector* tokens;
 Vector* code;
 Scope* global_scope;
+
+String *new_string();
+void str_push(String *str, char c);
 
 void tokenize(char *p);
 void gen(Node *node);

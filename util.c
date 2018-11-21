@@ -20,6 +20,23 @@ void vec_push(Vector *vec, void* elem) {
   vec->data[vec->len++] = elem;
 }
 
+String *new_string() {
+  String *str = malloc(sizeof(String));
+  str->data = malloc(sizeof(void *) * 16);
+  str->capacity = 16;
+  str->len = 0;
+  return str;
+}
+
+void str_push(String *str, char c) {
+  if (str->capacity == str->len) {
+    str->capacity *= 2;
+    str->data = realloc(str->data, sizeof(char) * str->capacity);
+  }
+
+  str->data[str->len++] = c;
+}
+
 Map *new_map() {
   Map *map = malloc(sizeof(Map));
   map->keys = new_vector();

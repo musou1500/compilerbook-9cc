@@ -1,6 +1,7 @@
 #include "9cc.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void expect(int line, int expected, int actual) {
   if (expected == actual)
@@ -35,6 +36,17 @@ void test_map() {
 
   map_put(map, "foo", (void *)6);
   expect(__LINE__, 6, (int)map_get(map, "foo"));
+}
+
+void test_string() {
+  String* str = new_string();
+  char* data = "hello";
+  int len = strlen(data);
+  for (int i = 0; i < len; i++) {
+    str_push(str, data[i]);
+  }
+  str_push(str, '\0');
+  expect(__LINE__, 0, strcmp(data, str->data));
 }
 
 void runtest() {
