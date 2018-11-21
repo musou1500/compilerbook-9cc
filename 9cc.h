@@ -24,6 +24,8 @@ enum {
   ND_LOGICAL_OR,
   ND_IDENT,
   ND_FUNC_CALL,
+  ND_IF,
+  ND_ELSE,
 };
 
 typedef struct {
@@ -39,9 +41,20 @@ typedef struct {
 
 typedef struct Node {
   int ty;
+
+  // binop
   struct Node* lhs;
   struct Node* rhs;
+
+  // if stmt
+  struct Node* cond;
+  Vector* stmts;
+  struct Node* els;
+
+  // number
   int val;
+
+  // fn_call or ident
   char *name;
   Vector* args;
 } Node;
