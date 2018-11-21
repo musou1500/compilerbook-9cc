@@ -26,6 +26,7 @@ enum {
   ND_FUNC_CALL,
   ND_IF,
   ND_ELSE,
+  ND_WHILE,
 };
 
 typedef struct {

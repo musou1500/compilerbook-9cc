@@ -72,6 +72,14 @@ Node* new_node_else(Vector* stmts) {
   return if_node;
 }
 
+Node* new_node_while(Node* cond, Vector* stmts) {
+  Node *while_node = malloc(sizeof(Node));
+  while_node->ty = ND_WHILE;
+  while_node->cond = cond;
+  while_node->stmts = stmts;
+  return while_node;
+}
+
 void error() {
   Token *token = tokens->data[pos];
   fprintf(stderr, "予期せぬトークンです: %s\n", token->input);
@@ -305,12 +313,16 @@ void block_item_list(Vector* stmts) {
   }
 }
 
-// stmt: assign | "{" block_item_list "}" | if_stmt
+// stmt: assign | "{" block_item_list "}" | if_stmt | while_stmt
 Node* if_stmt();
+Node* while_stmt();
 void stmt(Vector* stmts) {
   if (match_keyword("if")) {
     pos++;
     vec_push(stmts == NULL ? code : stmts, if_stmt());
+  } else if (match_keyword("while")) {
+    pos++;
+    vec_push(stmts == NULL ? code : stmts, while_stmt());
   } else if (match_ty('{')) {
     // compound statement
     pos++;
@@ -361,6 +373,23 @@ Node* elif() {
     stmt(stmts);
     return new_node_else(stmts);
   }
+}
+
+Node* while_stmt() {
+  if (match_ty('(')) {
+    pos++;
+    Node* cond = logical();
+    if (!match_ty(')')) {
+      error();
+    }
+
+    pos++;
+    Vector* stmts = new_vector();
+    stmt(stmts);
+    return new_node_while(cond, stmts);
+  }
+
+  error();
 }
 
 // program: stmt program'
