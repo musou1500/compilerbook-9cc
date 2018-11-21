@@ -197,10 +197,39 @@ Node *assign() {
   }
 }
 
-// program: assign program'
-// program': ε | assign program'
+
+
+// block_item_list: ε | stmt block_item_list'
+void stmt();
+void block_item_list() {
+  stmt();
+  if (!match_ty('}')) {
+    block_item_list();
+  }
+}
+
+// stmt: assign | "{" block_item_list "}"
+void stmt() {
+  if (match_ty('{')) {
+    // compound statement
+    pos++;
+
+    block_item_list();
+    if (match_ty('}')) {
+      pos++;
+      return;
+    }
+
+    error();
+  } else {
+    vec_push(code, assign());
+  }
+}
+
+// program: stmt program'
+// program': ε | program program'
 void program() {
-  vec_push(code, assign());
+  stmt();
   if (match_ty(TK_EOF)) {
     return;
   }
