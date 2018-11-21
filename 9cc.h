@@ -40,6 +40,11 @@ typedef struct Node {
   Vector* args;
 } Node;
 
+typedef struct {
+  Map* vars;
+  int var_cnt;
+} Scope;
+
 Vector* tokens;
 Vector* code;
 

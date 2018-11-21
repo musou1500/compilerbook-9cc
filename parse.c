@@ -6,6 +6,22 @@
 Vector* code;
 int pos = 0;
 
+Scope* new_scope() {
+  Scope scope = malloc(sizeof(Scope));
+  scope->vars = new_map();
+  scope->var_cnt = 0;
+}
+
+int scope_declare_var(Scope* scope, char *name) {
+  void *var_idx = map_get(scope->vars, name);
+  if (var_idx != NULL) {
+    return (int)var_idx;
+  }
+
+  map_put(scope->vars, name, scope->var_cnt);
+  return scope->var_cnt++;
+}
+
 Node* new_node(int op, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
   node->ty = op;
