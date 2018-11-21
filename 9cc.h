@@ -16,6 +16,10 @@ enum {
   ND_NUM = 256,     // 整数のノードの型
   ND_EQ,
   ND_NEQ,
+  ND_LTE,
+  ND_LT,
+  ND_GTE,
+  ND_GT,
   ND_IDENT,
   ND_FUNC_CALL
 };
