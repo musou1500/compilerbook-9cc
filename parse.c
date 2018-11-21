@@ -116,7 +116,8 @@ Node* expr() {
 
 
 // cmp: expr cmp'
-// cmp': != expr cmp' | == expr cmp' | ε
+// cmp_ops: "!=" | "==" | "<=" | ">=" | ">" | "<"
+// cmp': cmp_ops expr cmp' | ε
 Node* cmp() {
   Node *lhs = expr();
   if (match_ty(TK_EOF)) {
@@ -136,6 +137,28 @@ Node* cmp() {
     if (next_token->ty == '=') {
       pos += 2;
       return new_node(ND_EQ, lhs, cmp());
+    }
+  }
+  
+  if (match_ty('>')) {
+    Token* next_token = tokens->data[pos + 1];
+    if (next_token->ty == '=') {
+      pos += 2;
+      return new_node(ND_GTE, lhs, cmp());
+    } else {
+      pos++;
+      return new_node(ND_GT, lhs, cmp());
+    }
+  }
+  
+  if (match_ty('<')) {
+    Token* next_token = tokens->data[pos + 1];
+    if (next_token->ty == '=') {
+      pos += 2;
+      return new_node(ND_LTE, lhs, cmp());
+    } else {
+      pos++;
+      return new_node(ND_LT, lhs, cmp());
     }
   }
 
