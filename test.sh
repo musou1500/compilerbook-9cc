@@ -41,4 +41,8 @@ try 1 "1 && 1"
 try 0 "1 && 0"
 try 1 "0 || 1"
 try 1 "1 || 0 && 1"
+try 1 "if(1) { 1; } else { 2; }"
+try 2 "if(0) { 1; } else { 2; }"
+try 2 "if(0) { 1; } else if(1) { 2; } else { 3; }"
+try 3 "if(0) { 1; } else if(0) { 2; } else { 3; }"
 echo OK

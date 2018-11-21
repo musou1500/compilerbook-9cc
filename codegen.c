@@ -25,6 +25,36 @@ void gen_lval(Node* node) {
   exit(1);
 }
 
+void gen_if(Node* node) {
+  switch(node->ty) {
+    case ND_ELSE: {
+      for (int i = 0; i < node->stmts->len; i++) {
+        gen((Node *)node->stmts->data[i]);
+      }
+      break;
+    }
+    case ND_IF: {
+      int else_label = label_num();
+      int end_label = label_num();
+      gen(node->cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je L%d\n", else_label);
+      for (int i = 0; i < node->stmts->len; i++) {
+        gen((Node *)node->stmts->data[i]);
+      }
+      printf("  jmp L%d\n", end_label);
+
+      printf("L%d:\n", else_label);
+      if (node->els != NULL) {
+        gen_if(node->els);
+      }
+      printf("L%d:\n", end_label);
+      break;
+    }
+  }
+}
+
 void gen(Node *node) {
   if (node->ty == ND_FUNC_CALL) {
     // 引数は整数の場合，%rdi，%rsi，%rdx，%rcx，%r8，%r9に置く．残りはスタックへ．
@@ -68,6 +98,11 @@ void gen(Node *node) {
     printf("  pop rax\n");
     printf("  mov [rax], rdi \n");
     printf("  push rdi\n");
+    return;
+  }
+
+  if (node->ty == ND_IF) {
+    gen_if(node);
     return;
   }
 
