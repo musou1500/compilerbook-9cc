@@ -83,9 +83,12 @@ void gen(Node *node) {
 
     // 今のところ，引数の数を6までとし，それ以上は無視する
     int arg_len = (arg_limit > node->args->len) ? node->args->len : arg_limit;
-    for (int i = 0; i < arg_len; i++) {
+    for (int i = arg_len - 1; i >= 0; i--) {
       Node* arg = node->args->data[i];
       gen(arg);
+    }
+
+    for (int i = 0; i < arg_len; i++) {
       printf("  pop %s\n", arg_dests[i]);
     }
 
