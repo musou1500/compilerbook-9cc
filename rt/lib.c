@@ -7,27 +7,48 @@
 #define PI 3.141592
 #define PRECISION 1e-6
 
+
+/**
+ * 複素数オブジェクトを生成
+ */
 Complex* new_complex(int real, int imag) {
   Complex *node = malloc(sizeof(Complex));
+  
+  // 実部
   node->real = real;
+
+  // 虚部
   node->imag = imag;
   return node;
 }
 
+/**
+ * complex(複素数) の内容を
+ * "実部 + 虚部 i" の形式で表示する
+ */
 void print_complex(Complex* x) {
   printf("%lf + %lf i\n", x->real, x->imag);
 }
 
+/**
+ * 複素数同士の加算を行う
+ */
 Complex *add_complex(const Complex* x, const Complex* y)
 {
   return new_complex(x->real + y->real, x->imag + y->imag);
 }
 
+/**
+ * 複素数同士の減算を行う
+ */
 Complex *sub_complex(const Complex *x, const Complex *y)
 {
   return new_complex(x->real - y->real, x->imag - y->imag);
 }
 
+/**
+ * 複素数同士の乗算を行う
+ */
 Complex *mut_complex(const Complex *x, const Complex *y)
 {
   float real = x->real * y->real - x->imag * y->imag;
@@ -36,6 +57,9 @@ Complex *mut_complex(const Complex *x, const Complex *y)
   return new_complex(real, imag);
 }
 
+/**
+ * 複素数同士の除算を行う
+ */
 Complex *div_complex(const Complex *x, const Complex *y)
 {
   float real = (x->real * y->real + x->imag * y->imag) / (sqr(y->real) + sqr(y->imag));
@@ -44,6 +68,9 @@ Complex *div_complex(const Complex *x, const Complex *y)
   return new_complex(real, imag);
 }
 
+/**
+ * 指数関数 e^xを計算する
+ */
 float exp(float x) {
   float a = 1, b = 1, sum = 0, item = 1;
   int count = 0;
@@ -57,64 +84,28 @@ float exp(float x) {
   return sum;
 }
 
+/**
+ * hyperbolic sinを計算する
+ */
 float sinh(const float x) {
   float hype = exp(x);
   return (hype - 1 / hype) / 2;
 }
 
+/**
+ * hyperbolic cosを計算する
+ */
 float cosh(const float x) {
   float hype = exp(x); return (hype + 1 / hype) / 2;
 }
 
+/**
+ * hyperbolic tanを計算する
+ */
 float tanh(const float x) {
   float hype = exp(x);
   return (hype - 1 / hype) / (hype + 1 / hype);
 }
-
-double Sin(double x) 
-{
-  double t, p, z = 1, s = 0, u = 1;
-  int i, count = 0;
-  double y = x * PI / 180;
-  while (u > PRECISION)
-  {
-    t = 1; 
-    for (i = 1; i <= (2 * count + 1); i++) t *= i; 
-    
-    p = 1; 
-    for (i = 1; i <= (2 * count + 1); i++) p *= y;
-
-    u = p / t;
-    s += z * u;
-    z *= -1;
-    count++;
-  }
-  return s;
-}
-
-double Cos(double x)
-{
-  double t, p, z = 1, s = 0, u = 1;
-  int i, count=0;
-
-  double y = (x * PI) / 180; 
-  while (u > PRECISION)
-  {
-    t = 1; 
-    p = 1; 
-    for (i = 1; i <= (2 * count); i++) t*=i; 
-    
-    for (i = 1; i <= (2 * count); i++) p *= y; 
-
-    u = p / t;
-    s += z * u; 
-    z *= -1;
-    count++; 
-  }
-  return s;
-}
-
-double Tan(const double x) { return Sin(x) / Cos(x); }
 
 
 float sin(float x) //sin関数
@@ -122,6 +113,8 @@ float sin(float x) //sin関数
   float t, p, z = 1, s = 0, u = 1;
   int i, count = 0;
   float y = x * PI / 180;//ラジアンは角度に転換
+
+  // sin(x) = x - (x^3 / 3!) + (x^5 / 5!) - (x^7 / 7!) +...
   while (u > PRECISION)
   {
     t = 1; //初期化する
@@ -138,12 +131,17 @@ float sin(float x) //sin関数
   return s;
 }
 
+/**
+ * cosを計算する
+ */
 float cos(float x)
 {
   float t, p, z = 1, s = 0, u = 1;
   int i, count=0;
 
   float y = (x * PI) / 180; //ラジアンは角度に転換
+  
+  // cos(x) = x - (x^2 / 2!) + (x^4 / 4!) - (x^6 / 6!) +...
   while (u > PRECISION)
   {
     t = 1; //初期化
@@ -160,8 +158,14 @@ float cos(float x)
   return s;
 }
 
+/**
+ * tanを計算する
+ */
 float tan(const float x) { return sin(x) / cos(x); }
 
+/**
+ * 自然対数log e(x) を計算する
+ */
 float ln(float x)
 {
   float a = 1, b = 1, sum = 0, item = 1, y = (x - 1) / (x + 1);
@@ -182,6 +186,9 @@ float ln(float x)
   return 2 * y * sum;
 }
 
+/**
+ * xの平方根を計算する
+ */
 float sqrt(float x)
 {
   float k = x;
@@ -193,10 +200,15 @@ float sqrt(float x)
   return k;
 }
 
+/**
+ * arctanを計算する
+ */
 float arctan(float x)
 {
   int i, count = 0, z = 1;
   float a = x, b = 1, sum = 0, item = 1;
+
+  // arctan(x) = x − (x^3 / 3) + (x^5 / 5) − (x^7 / 7) + ...
   if ((x > 1) || (x < -1)) {
     printf("error");
     return 0;
@@ -213,6 +225,9 @@ float arctan(float x)
   return sum;
 }
 
+/**
+ * 複素数に対しarctanを計算する
+ */
 float arctan2(const Complex* x) {
   float Res;
 
@@ -232,6 +247,9 @@ float arctan2(const Complex* x) {
   return Res;
 }
 
+/**
+ * 複素数に対して sinを計算する
+ */
 Complex *sin_complex(const Complex *x)
 {
   float real = sin(x->real) * cosh(x->imag);
@@ -240,6 +258,9 @@ Complex *sin_complex(const Complex *x)
   return new_complex(real, imag);
 }
 
+/**
+ * 複素数に対して cos を計算する
+ */
 Complex *cos_complex(const Complex *x)
 {
   float real = cos(x->real) * cosh(x->imag);
@@ -248,6 +269,9 @@ Complex *cos_complex(const Complex *x)
   return new_complex(real, imag);
 }
 
+/**
+ * 複素数に対して tanを計算する
+ */
 Complex *tan_complex(const Complex *x)
 {
   Complex* nume = new_complex(tan(x->real), tanh(x->imag));
@@ -255,6 +279,9 @@ Complex *tan_complex(const Complex *x)
   return div_complex(nume, deno);
 }
 
+/**
+ * 複素数xについて，指数関数 e^xを計算する
+ */
 Complex *exp_complex(const Complex *x)
 {
   float hype = exp(x->real);
@@ -263,30 +290,14 @@ Complex *exp_complex(const Complex *x)
   return new_complex(real, imag);
 }
 
+/**
+ * 複素数に対して 自然対数 log e(x) を計算する
+ */
 Complex *ln_complex(const Complex *x)
 {
   float real = ln(sqrt(sqr(x->real) + sqr(x->imag)));
   float imag = arctan2(x);
   return new_complex(real, imag);
-}
-
-int add_int(int x, int y) {
-  return x + y;
-}
-
-Coord *new_coord(int x, int y) {
-  Coord* d = malloc(sizeof(Coord));
-  d->x = x;
-  d->y = y;
-  return d;
-}
-
-Coord *sum_coord(Coord *a, Coord* b) {
-  return new_coord(a->x + b->x, a->y + b->y);
-}
-
-void print_coord(Coord* c) {
-  printf("%d %d\n", c->x, c->y);
 }
 
 int main(int argc, const char *argv[])
