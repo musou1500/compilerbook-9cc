@@ -28,7 +28,7 @@ void gen_lval(Node* node) {
 
     printf("  mov rax, rbp\n");
     printf("  sub rax, %d\n", ((int)var_idx - 1) * 8);
-    printf("  push rax\n");
+    gen_push("rax");
     return;
   }
 
@@ -53,7 +53,7 @@ void gen_if(Node* node) {
       int else_label = label_num();
       int end_label = label_num();
       gen(node->cond);
-      printf("  pop rax\n");
+      gen_pop("rax");
       printf("  cmp rax, 0\n");
       printf("  je L%d\n", else_label);
       for (int i = 0; i < node->stmts->len; i++) {
@@ -76,7 +76,7 @@ void gen_while(Node* node) {
   int end_label = label_num();
   printf("L%d:\n", start_label);
   gen(node->cond);
-  printf("  pop rax\n");
+  gen_pop("rax");
   printf("  cmp rax, 0\n");
   printf("  je L%d\n", end_label);
   for (int i = 0; i < node->stmts->len; i++) {
@@ -100,38 +100,40 @@ void gen(Node *node) {
     }
 
     for (int i = 0; i < arg_len; i++) {
-      printf("  pop %s\n", arg_dests[i]);
+      gen_pop(arg_dests[i]);
     }
 
-    printf("  push r10\n");
-    printf("  push r11\n");
+    gen_push("r10");
+    gen_push("r11");
     printf("  call %s\n", node->name->data);
-    printf("  pop r10\n");
-    printf("  pop r11\n");
-    printf("  push rax\n");
+    gen_pop("r11");
+    gen_pop("r10");
+    gen_push("rax");
     return;
   }
 
   if (node->ty == ND_NUM) {
-    printf("  push %d\n", node->val);
+    char buf[64];
+    sprintf(buf, "%d", node->val);
+    gen_push(buf);
     return;
   }
 
   if (node->ty == ND_IDENT) {
     gen_lval(node);
-    printf("  pop rax\n");
+    gen_pop("rax");
     printf("  mov rax, [rax]\n");
-    printf("  push rax\n");
+    gen_push("rax");
     return;
   }
 
   if (node->ty == '=') {
     gen_lval(node->lhs);
     gen(node->rhs);
-    printf("  pop rdi\n");
-    printf("  pop rax\n");
+    gen_pop("rdi");
+    gen_pop("rax");
     printf("  mov [rax], rdi \n");
-    printf("  push rdi\n");
+    gen_push("rdi");
     return;
   }
 
@@ -148,8 +150,8 @@ void gen(Node *node) {
   gen(node->lhs);
   gen(node->rhs);
 
-  printf("  pop rdi\n");
-  printf("  pop rax\n");
+  gen_pop("rdi");
+  gen_pop("rax");
 
   switch (node->ty) {
     case '+':
@@ -248,6 +250,6 @@ void gen(Node *node) {
     }
   }
 
-  printf("  push rax\n");
+  gen_push("rax");
 }
 
