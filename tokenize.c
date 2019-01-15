@@ -7,15 +7,6 @@
 
 Vector* tokens;
 
-char *keywords[] = {
-  "if",
-  "else",
-  "while",
-  "continue",
-  "break",
-  NULL
-};
-
 Token *new_token(int ty, char *input) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;
@@ -34,14 +25,6 @@ Token* new_token_ident(char* input, String *name) {
 Token *new_token_val(int ty, char *input, int val) {
   Token* tok = malloc(sizeof(Token));
   tok->ty = ty;
-  tok->input = input;
-  tok->val = val;
-  return tok;
-}
-
-Token *new_token_keyword(char *input, int val) {
-  Token* tok = malloc(sizeof(Token));
-  tok->ty = TK_KEYWORD;
   tok->input = input;
   tok->val = val;
   return tok;
@@ -81,7 +64,7 @@ void tokenize(char *p) {
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
+    if (is_identifier_char(*p)) {
       String *ident = new_string();
       do {
         str_push(ident, *p);
@@ -90,13 +73,6 @@ void tokenize(char *p) {
       str_push(ident, '\0');
       
       Token* tok = new_token_ident(p, ident);
-      for (int i = 0; keywords[i] != NULL; i++) {
-        if (strcmp(ident->data, keywords[i]) == 0) {
-          tok = new_token_keyword(p, i);
-          break;
-        }
-      }
-
       vec_push(tokens, tok);
       continue;
     }
