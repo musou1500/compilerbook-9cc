@@ -41,6 +41,7 @@ Node* new_node_num(int val) {
   return node;
 }
 
+
 Node* new_node_ident(String* name) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_IDENT;
@@ -78,6 +79,13 @@ Node* new_node_while(Node* cond, Vector* stmts) {
   while_node->cond = cond;
   while_node->stmts = stmts;
   return while_node;
+}
+
+Node* new_node_ret(Node* expr) {
+  Node *ret = malloc(sizeof(Node));
+  ret->ty = ND_RET;
+  ret->expr = expr;
+  return ret;
 }
 
 void error() {
@@ -313,7 +321,11 @@ Node* if_stmt();
 Node* while_stmt();
 void stmt(Vector* stmts) {
   Token *tok = tokens->data[pos];
-  if (match_ty(TK_IDENT) && strcmp(tok->name->data, "if") == 0) {
+  if (match_ty(TK_IDENT) && strcmp(tok->name->data, "return") == 0) {
+    pos++;
+    Node *ret = new_node_ret(assign());
+    vec_push(stmts == NULL ? code : stmts, ret);
+  } else if (match_ty(TK_IDENT) && strcmp(tok->name->data, "if") == 0) {
     pos++;
     vec_push(stmts == NULL ? code : stmts, if_stmt());
   } else if (match_ty(TK_IDENT) && strcmp(tok->name->data, "while") == 0) {

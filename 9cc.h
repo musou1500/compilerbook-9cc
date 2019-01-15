@@ -34,6 +34,7 @@ enum {
   ND_IF,
   ND_ELSE,
   ND_WHILE,
+  ND_RET,
 };
 
 typedef struct {
@@ -58,6 +59,7 @@ typedef struct Node {
   struct Node* cond;
   Vector* stmts;
   struct Node* els;
+  struct Node* expr;
 
   // number
   int val;
