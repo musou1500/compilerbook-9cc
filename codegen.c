@@ -105,7 +105,12 @@ void gen(Node *node) {
 
     gen_push("r10");
     gen_push("r11");
+    
+    // 16バイトアラインメントを保証する
+    int stack_top = stack_depth % 16;
+    printf("sub rsp, %d\n", 16 - stack_top);
     printf("  call %s\n", node->name->data);
+    printf("add rsp, %d\n", 16 - stack_top);
     gen_pop("r11");
     gen_pop("r10");
     gen_push("rax");
