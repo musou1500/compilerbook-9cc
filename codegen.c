@@ -154,6 +154,7 @@ void gen(Node *node) {
 
   if (node->ty == ND_RET) {
     gen(node->expr);
+    gen_pop("rax");
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
     printf("  ret\n");
