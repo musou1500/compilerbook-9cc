@@ -2,6 +2,17 @@
 #include <stdlib.h>
 #include "9cc.h"
 
+int stack_depth = 0;
+void gen_push(char *reg) {
+  printf("push %s\n", reg);
+  stack_depth += 8;
+}
+
+void gen_pop(char *reg) {
+  printf("pop %s\n", reg);
+  stack_depth -= 8;
+}
+
 int label_num() {
   static int label_num = 0;
   return label_num++;
