@@ -1,7 +1,9 @@
 i = sum = 0;
-while(i < 100) {
+while(i < 10) {
   i = i + 1;
   sum = sum + i;
 }
 
-print_int(sum);
+if (sum == 55) {
+  print_int(sum);
+}
