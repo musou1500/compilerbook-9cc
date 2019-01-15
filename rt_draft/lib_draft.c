@@ -423,18 +423,6 @@ struct Matrix MatPow(struct Matrix a, int x)
 
 void main(void)
 {
-  struct Complex a = getAComplex(1, 2);
-
-  struct Complex c = SinComplex(a);
-  printAComplex(c);
-  
-  RootComplex(a);
-  printf("Power of %d = %lf\n", 3, QuickPower(3, 2));
-  printf("Power of "); printAComplex(a); printf(" = "); printAComplex(QuickPowerComplex(a, 2)); puts("");
-
-  struct Matrix Ma = getAMatrix(3, 1);
-  struct Matrix Mb = getAMatrix(1, 3);
-  struct Matrix Mc = getAMatrix(1, 1);
-  printAMatrix(MatMul(Ma, Mb));
-  printAMatrix(MatPow(Mc, 2));
+  /* Arctan2(getAComplex(10, 20)); */
+  C_PI();
 }
